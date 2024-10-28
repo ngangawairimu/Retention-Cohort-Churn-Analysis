@@ -1,0 +1,46 @@
+-- CTE (Common Table Expression) to create weekly cohorts of users based on their subscription start date
+WITH weekly_cohorts AS (
+  SELECT 
+    user_pseudo_id,  -- Unique identifier for each user
+    DATE_TRUNC(subscription_start, WEEK) AS cohort_week,  -- Truncate subscription_start to the beginning of the week for cohort grouping
+    subscription_start,  -- Store the actual subscription start date
+    COALESCE(subscription_end, '2021-02-07') AS subscription_end  -- Use '2021-02-07' as a default end date if subscription_end is NULL
+  FROM 
+    tc-da-1.turing_data_analytics.subscriptions  -- Source table containing subscription data
+),
+
+-- CTE to calculate weekly user activity for each cohort week
+weekly_activity AS (
+    SELECT
+        cohort_week,  -- Cohort week derived from the previous CTE
+        COUNT(CASE WHEN subscription_start <= cohort_week + INTERVAL 1 WEEK 
+                    AND (subscription_end >= cohort_week) THEN user_pseudo_id END) AS week_0,  -- Count users active in week 0
+
+        COUNT(CASE WHEN subscription_start < cohort_week + INTERVAL 2 WEEK 
+                    AND (subscription_end > cohort_week + INTERVAL 1 WEEK) THEN user_pseudo_id END) AS week_1,  -- Count users active in week 1
+
+        COUNT(CASE WHEN subscription_start < cohort_week + INTERVAL 3 WEEK 
+                    AND (subscription_end > cohort_week + INTERVAL 2 WEEK) THEN user_pseudo_id END) AS week_2,  -- Count users active in week 2
+
+        COUNT(CASE WHEN subscription_start < cohort_week + INTERVAL 4 WEEK 
+                    AND (subscription_end > cohort_week + INTERVAL 3 WEEK) THEN user_pseudo_id END) AS week_3,  -- Count users active in week 3
+
+        COUNT(CASE WHEN subscription_start < cohort_week + INTERVAL 5 WEEK 
+                    AND (subscription_end > cohort_week + INTERVAL 4 WEEK) THEN user_pseudo_id END) AS week_4,  -- Count users active in week 4
+
+        COUNT(CASE WHEN subscription_start < cohort_week + INTERVAL 6 WEEK 
+                    AND (subscription_end > cohort_week + INTERVAL 5 WEEK) THEN user_pseudo_id END) AS week_5,  -- Count users active in week 5
+                            
+        COUNT(CASE WHEN subscription_start < cohort_week + INTERVAL 7 WEEK 
+                    AND (subscription_end > cohort_week + INTERVAL 6 WEEK) THEN user_pseudo_id END) AS week_6  -- Count users active in week 6
+    FROM 
+        weekly_cohorts  -- Use the cohorts defined in the previous CTE
+    GROUP BY 
+        cohort_week  -- Group results by each cohort week to aggregate user activity
+    ORDER BY 
+        cohort_week ASC  -- Order the results by cohort week in ascending order
+)
+
+-- Final selection of all columns from the weekly_activity CTE to view user activity counts by week
+SELECT *
+FROM weekly_activity;
