@@ -1,5 +1,6 @@
-## Summary of Analysis
-### Google sheets : https://docs.google.com/spreadsheets/d/1aHsOk4QBmF7qF9rvLarq5hCeJwUbQA5g/edit?usp=sharing&ouid=112959083755862807381&rtpof=true&sd=true
+## Retention, Cohorts & Churn Project
+#### Summary of Analysis
+### Google Sheets: https://docs.google.com/spreadsheets/d/1aHsOk4QBmF7qF9rvLarq5hCeJwUbQA5g/edit?usp=sharing&ouid=112959083755862807381&rtpof=true&sd=true
 #### Data Preparation:
 
 The analysis utilized a SQL query to extract subscriber data from the turing_data_analytics. The subscriptions table, focusing on subscriptions, starts between January 1, 2021, and February 7, 2021.
